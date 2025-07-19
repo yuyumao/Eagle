@@ -1,24 +1,35 @@
 package com.eagle.service;
 
-import com.eagle.pojo.User;
-import com.eagle.pojo.UserDTO;
+import com.eagle.pojo.CreateUserRequest;
+import com.eagle.entity.User;
 import com.eagle.repository.UserRepository;
-import org.springframework.beans.BeanUtils;
+import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Bean;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
+@Slf4j
 @Service
-public class UserService {
+public class UserService implements UserDetailsService {
 
     @Autowired
     UserRepository userRepository;
 
-    public User add(UserDTO userDTO) {
+    @Override
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+        return userRepository.findByUserName(username)
+                .map(this::toUserDetails)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found: " + username));
+    }
 
-        User user = new User();
-        BeanUtils.copyProperties(user, userRepository);
-
-        return userRepository.save(user);
+    private UserDetails toUserDetails(User user) {
+        return org.springframework.security.core.userdetails.User
+                .withUsername(user.getUserName())
+                .password(user.getPasswordHash())
+                .build();
     }
 }
