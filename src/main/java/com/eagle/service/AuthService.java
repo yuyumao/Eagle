@@ -16,14 +16,14 @@ public class AuthService {
     private final AuthenticationManager authenticationManager;
     private final JWTService jwtService;
 
-    public AuthResponse authenticate(String username, String password) {
+    public AuthResponse authenticate(String userId, String password) {
 
         Authentication authentication = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(username, password)
+                new UsernamePasswordAuthenticationToken(userId, password)
         );
-        String authenticatedUsername = authentication.getName();
+        String authenticatedUserId = authentication.getName();
 
-        String token = jwtService.generateToken(authenticatedUsername);
+        String token = jwtService.generateToken(authenticatedUserId);
         return new AuthResponse(token);
     }
 }

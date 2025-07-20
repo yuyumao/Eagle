@@ -10,6 +10,7 @@ import com.eagle.service.AccountService;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -31,14 +32,8 @@ public class AccountController {
 
     @PostMapping
     public ResponseEntity<AccountResponse> create(@Valid @RequestBody CreateAccountRequest request) {
-        Account account = accountService.create(request);
-        URI location = ServletUriComponentsBuilder
-                .fromCurrentRequest()
-                .path("/v1/account")
-                .buildAndExpand(request.getName())
-                .toUri();
-        AccountResponse response = convertToResponse(account);
-        return ResponseEntity.created(location).body(response);
+        AccountResponse response = convertToResponse(accountService.create(request));
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
     private AccountResponse convertToResponse(Account account) {

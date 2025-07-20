@@ -10,6 +10,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import org.springframework.data.domain.Sort;
 
+import java.math.BigDecimal;
 import java.time.Instant;
 
 @Data
@@ -25,7 +26,7 @@ public class AccountResponse {
 
     private AccountType accountType;
 
-    private float balance;
+    private BigDecimal balance;
 
     private Currency currency;
 

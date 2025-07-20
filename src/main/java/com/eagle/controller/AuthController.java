@@ -23,7 +23,8 @@ public class AuthController {
 
     @PostMapping
     public ResponseEntity<AuthResponse> auth(@Valid @RequestBody AuthRequest request) {
-        AuthResponse response = authService.authenticate(request.getName(), request.getPassword());
+        System.out.println(request);
+        AuthResponse response = authService.authenticate(request.getUserId(), request.getPassword());
         return ResponseEntity.ok(response);
     }
 }

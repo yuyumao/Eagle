@@ -2,29 +2,31 @@ package com.eagle.controller;
 
 import com.eagle.pojo.CreateUserRequest;
 import com.eagle.entity.User;
+import com.eagle.pojo.ErrorResponse;
 import com.eagle.pojo.UserAddressDTO;
 import com.eagle.pojo.UserResponse;
 import com.eagle.service.UserCreationService;
 import com.eagle.service.UserService;
 import jakarta.validation.Valid;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.security.core.Authentication;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
-
+import org.springframework.web.bind.annotation.*;
+import java.util.Optional;
 import java.net.URI;
 
-@Slf4j
+
 @RestController
 @RequestMapping("/v1/user")
 public class UserController {
 
     @Autowired
     private UserCreationService userCreationServiceService;
+    @Autowired
+    private UserService userService;
 
     @PostMapping
     public ResponseEntity<UserResponse> add(@Valid @RequestBody CreateUserRequest request) {
@@ -37,6 +39,12 @@ public class UserController {
         UserResponse response = convertToResponse(user);
         return ResponseEntity.created(location).body(response);
     }
+
+    @GetMapping("/{userId}")
+    public ResponseEntity<?> get(@PathVariable("userId") String userId, Authentication authentication) {
+        return userService.findByUserId(userId).map(ResponseEntity::ok).orElse(ResponseEntity.notFound().build());
+    }
+
 
     private UserResponse convertToResponse(User user) {
 

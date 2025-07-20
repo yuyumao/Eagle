@@ -1,10 +1,14 @@
 package com.eagle.entity;
 
+import com.eagle.pojo.InsufficientFundsException;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
 import lombok.Data;
 
+import java.math.BigDecimal;
 import java.time.Instant;
+import java.util.ArrayList;
+import java.util.List;
 
 @Table(name = "account")
 @Entity
@@ -16,6 +20,11 @@ public class Account {
     @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "account_id", nullable = false, unique = true)
     private String id;
+
+    @NotNull
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", nullable = false)
+    private User user;
 
     @NotNull
     @Pattern(regexp = "^01\\d{6}$")
@@ -36,10 +45,10 @@ public class Account {
     private AccountType accountType;
 
     @NotNull
-    @DecimalMax(value = "10000.00", inclusive = true)
-    @DecimalMin(value = "0.00", inclusive = true)
-    @Column(name = "balance", nullable = false)
-    private float balance;
+    @DecimalMin(value = "0.00")
+    @DecimalMax(value = "10000.00")
+    @Column(name = "balance", nullable = false, precision = 15, scale = 2)
+    private BigDecimal balance;
 
     @NotNull
     @Enumerated(EnumType.STRING)
@@ -50,7 +59,11 @@ public class Account {
     @Column(name = "create_timestamp", nullable = false)
     private Instant createTimeStamp;
 
-    public Account(String accountNumber, SortCode sortCode, String name, AccountType accountType, float balance, Currency currency, Instant createTimeStamp, Instant updateTimeStamp) {
+    @OneToMany(mappedBy = "account", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Transaction> transactions = new ArrayList<>();
+
+    public Account(User user, String accountNumber, SortCode sortCode, String name, AccountType accountType, BigDecimal balance, Currency currency, Instant createTimeStamp, Instant updateTimeStamp, List<Transaction> transactions) {
+        this.user = user;
         this.accountNumber = accountNumber;
         this.sortCode = sortCode;
         this.name = name;
@@ -59,6 +72,7 @@ public class Account {
         this.currency = currency;
         this.createTimeStamp = createTimeStamp;
         this.updateTimeStamp = updateTimeStamp;
+        this.transactions = transactions;
     }
 
     @NotNull
@@ -67,5 +81,19 @@ public class Account {
 
     public Account() {
 
+    }
+
+    @Version
+    private Long version;
+
+    public void deposit(BigDecimal amount) {
+        this.balance = this.balance.add(amount);
+    }
+
+    public void withdraw(BigDecimal amount) {
+        if (balance.compareTo(amount) < 0) {
+            throw new InsufficientFundsException("Insufficient balance");
+        }
+        this.balance = this.balance.subtract(amount);
     }
 }
