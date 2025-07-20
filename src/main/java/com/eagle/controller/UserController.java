@@ -1,21 +1,18 @@
 package com.eagle.controller;
 
-import com.eagle.pojo.CreateUserRequest;
+import com.eagle.dtos.CreateUserRequest;
 import com.eagle.entity.User;
-import com.eagle.pojo.ErrorResponse;
-import com.eagle.pojo.UserAddressDTO;
-import com.eagle.pojo.UserResponse;
+import com.eagle.dtos.UserAddressDTO;
+import com.eagle.dtos.UserResponse;
 import com.eagle.service.UserCreationService;
 import com.eagle.service.UserService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
-import org.springframework.web.bind.annotation.*;
-import java.util.Optional;
+
 import java.net.URI;
 
 

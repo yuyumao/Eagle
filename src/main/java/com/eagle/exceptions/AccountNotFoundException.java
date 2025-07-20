@@ -1,4 +1,4 @@
-package com.eagle.pojo;
+package com.eagle.exceptions;
 
 public class AccountNotFoundException extends RuntimeException {
     public AccountNotFoundException(String message) {

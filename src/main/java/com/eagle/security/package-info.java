@@ -1,4 +1,4 @@
 @NonNullApi
-package com.eagle.service;
+package com.eagle.security;
 
 import org.springframework.lang.NonNullApi;

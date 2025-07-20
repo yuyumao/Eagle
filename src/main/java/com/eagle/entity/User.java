@@ -11,14 +11,12 @@ import java.time.Instant;
 @Data
 public class User {
 
-    public User(String userName, Address address, String phoneNumber, String email, String passwordHash, Instant createdTimestamp, Instant updatedTimestamp) {
+    public User(String userName, Address address, String phoneNumber, String email, String passwordHash) {
         this.userName = userName;
         this.address = address;
         this.phoneNumber = phoneNumber;
         this.email = email;
         this.passwordHash = passwordHash;
-        this.createdTimestamp = createdTimestamp;
-        this.updatedTimestamp = updatedTimestamp;
     }
 
     @Id
@@ -49,6 +47,17 @@ public class User {
     private Instant updatedTimestamp;
 
     public User() {
+    }
+
+    @PreUpdate
+    protected void onUpdate() {
+        this.updatedTimestamp = Instant.now();
+    }
+
+    @PrePersist
+    protected void onCreate() {
+        this.createdTimestamp = Instant.now();
+        this.updatedTimestamp = Instant.now();
     }
 
     @Data

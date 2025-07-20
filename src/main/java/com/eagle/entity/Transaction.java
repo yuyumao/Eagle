@@ -1,6 +1,6 @@
 package com.eagle.entity;
 
-import com.eagle.pojo.TransactionType;
+import com.eagle.dtos.TransactionType;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
 import lombok.Data;
@@ -32,7 +32,7 @@ public class Transaction {
     @NotNull
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private TransactionType type; // DEPOSIT, WITHDRAWAL
+    private TransactionType type;
 
     @NotNull
     @Column(nullable = false, updatable = false)
@@ -43,12 +43,19 @@ public class Transaction {
     @JoinColumn(name = "account_id", nullable = false)
     private Account account;
 
-    public Transaction(Account account, Instant timestamp, TransactionType type, Currency currency, BigDecimal amount) {
+    private String reference;
+
+    @PrePersist
+    protected void onCreate() {
+        this.timestamp = Instant.now();
+    }
+
+    public Transaction(Account account, TransactionType type, Currency currency, BigDecimal amount, String reference) {
         this.account = account;
-        this.timestamp = timestamp;
         this.type = type;
         this.currency = currency;
         this.amount = amount;
+        this.reference = reference;
     }
 
     public Transaction(){}

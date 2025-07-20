@@ -1,4 +1,4 @@
-package com.eagle.pojo;
+package com.eagle.exceptions;
 
 public class CurrencyMismatchException extends RuntimeException {
     public CurrencyMismatchException(String message) {

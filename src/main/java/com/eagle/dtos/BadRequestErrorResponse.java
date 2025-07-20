@@ -1,4 +1,4 @@
-package com.eagle.pojo;
+package com.eagle.dtos;
 
 import java.util.List;
 

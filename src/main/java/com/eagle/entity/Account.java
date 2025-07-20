@@ -1,9 +1,11 @@
 package com.eagle.entity;
 
-import com.eagle.pojo.InsufficientFundsException;
+import com.eagle.exceptions.InsufficientFundsException;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
 
 import java.math.BigDecimal;
 import java.time.Instant;
@@ -12,7 +14,9 @@ import java.util.List;
 
 @Table(name = "account")
 @Entity
-@Data
+@Getter
+@Setter
+@ToString(exclude = "transactions")
 public class Account {
 
     @Id
@@ -33,7 +37,7 @@ public class Account {
 
     @NotNull
     @Column(name = "sort_code", nullable = false)
-    private SortCode sortCode;
+    private String sortCode;
 
     @NotBlank
     @Column(name = "name", nullable = false)
@@ -62,22 +66,30 @@ public class Account {
     @OneToMany(mappedBy = "account", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Transaction> transactions = new ArrayList<>();
 
-    public Account(User user, String accountNumber, SortCode sortCode, String name, AccountType accountType, BigDecimal balance, Currency currency, Instant createTimeStamp, Instant updateTimeStamp, List<Transaction> transactions) {
+    public Account(User user, String accountNumber, SortCode sortCode, String name, AccountType accountType, BigDecimal balance, Currency currency) {
         this.user = user;
         this.accountNumber = accountNumber;
-        this.sortCode = sortCode;
+        this.sortCode = sortCode.value;
         this.name = name;
         this.accountType = accountType;
         this.balance = balance;
         this.currency = currency;
-        this.createTimeStamp = createTimeStamp;
-        this.updateTimeStamp = updateTimeStamp;
-        this.transactions = transactions;
     }
 
     @NotNull
     @Column(name = "update_timestamp", nullable = false)
     private Instant updateTimeStamp;
+
+    @PreUpdate
+    protected void onUpdate() {
+        this.updateTimeStamp = Instant.now();
+    }
+
+    @PrePersist
+    protected void onCreate() {
+        this.createTimeStamp = Instant.now();
+        this.updateTimeStamp = Instant.now();
+    }
 
     public Account() {
 
@@ -95,5 +107,10 @@ public class Account {
             throw new InsufficientFundsException("Insufficient balance");
         }
         this.balance = this.balance.subtract(amount);
+    }
+
+    public void addTransaction(Transaction transaction) {
+        transactions.add(transaction);
+        transaction.setAccount(this);
     }
 }

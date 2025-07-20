@@ -1,4 +1,4 @@
-package com.eagle.service;
+package com.eagle.security;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

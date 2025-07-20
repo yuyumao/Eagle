@@ -1,14 +1,11 @@
-package com.eagle.pojo;
+package com.eagle.dtos;
 
 import com.eagle.entity.AccountType;
 import com.eagle.entity.Currency;
 import com.eagle.entity.SortCode;
-import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import org.springframework.data.domain.Sort;
 
 import java.math.BigDecimal;
 import java.time.Instant;
@@ -20,7 +17,7 @@ public class AccountResponse {
 
     private String accountNumber;
 
-    private SortCode sortCode;
+    private String sortCode;
 
     private String name;
 

@@ -1,4 +1,4 @@
-package com.eagle.pojo;
+package com.eagle.dtos;
 
 import jakarta.validation.constraints.*;
 import lombok.Data;
@@ -28,10 +28,11 @@ public class CreateUserRequest {
     )
     private String password;
 
-    public CreateUserRequest(String name, UserAddressDTO address, String phoneNumber, String email) {
+    public CreateUserRequest(String name, UserAddressDTO address, String phoneNumber, String email, String password) {
         this.name = name;
         this.address = address;
         this.phoneNumber = phoneNumber;
         this.email = email;
+        this.password = password;
     }
 }

@@ -1,4 +1,4 @@
-package com.eagle.pojo;
+package com.eagle.dtos;
 
 import com.eagle.entity.Currency;
 import jakarta.validation.constraints.DecimalMax;
@@ -19,4 +19,6 @@ public class CreateTransactionRequest {
     Currency currency;
     @NotNull(message = "Transaction type cannot be null")
     TransactionType type;
+
+    String reference;
 }

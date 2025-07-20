@@ -18,8 +18,11 @@ import java.util.Optional;
 @Service
 public class UserService implements UserDetailsService {
 
-    @Autowired
-    UserRepository userRepository;
+    private final UserRepository userRepository;
+
+    public UserService(UserRepository userRepository) {
+        this.userRepository = userRepository;
+    }
 
     @Override
     public UserDetails loadUserByUsername(String userId) throws UsernameNotFoundException {
@@ -37,7 +40,7 @@ public class UserService implements UserDetailsService {
         }
     }
 
-    private UserDetails toUserDetails(User user) {
+    UserDetails toUserDetails(User user) {
         return org.springframework.security.core.userdetails.User
                 .withUsername(user.getUserId())
                 .password(user.getPasswordHash())

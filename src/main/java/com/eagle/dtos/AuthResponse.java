@@ -1,4 +1,4 @@
-package com.eagle.pojo;
+package com.eagle.dtos;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

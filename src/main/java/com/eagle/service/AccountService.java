@@ -4,33 +4,35 @@ import com.eagle.entity.Account;
 import com.eagle.entity.Currency;
 import com.eagle.entity.SortCode;
 import com.eagle.entity.User;
-import com.eagle.pojo.CreateAccountRequest;
-import com.eagle.pojo.ErrorResponse;
+import com.eagle.dtos.CreateAccountRequest;
 import com.eagle.repository.AccountRepository;
 import com.eagle.repository.AccountSequenceRepository;
 import com.eagle.repository.UserRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
-import java.time.Instant;
 
+@Slf4j
 @Service
 public class AccountService {
 
     public final static String ACCOUNT_PREFIX = "01";
 
-    @Autowired
-    private AccountSequenceRepository accountSequenceRepository;
-    @Autowired
-    private AccountRepository accountRepository;
-    @Autowired
-    private UserRepository userRepository;
+    private final AccountSequenceRepository accountSequenceRepository;
+    private final AccountRepository accountRepository;
+    private final UserRepository userRepository;
+
+    public AccountService(AccountSequenceRepository accountSequenceRepository, AccountRepository accountRepository, UserRepository userRepository) {
+        this.accountSequenceRepository = accountSequenceRepository;
+        this.accountRepository = accountRepository;
+        this.userRepository = userRepository;
+    }
 
     public Account create(CreateAccountRequest createAccountRequest) {
+
         final String userId = SecurityContextHolder.getContext().getAuthentication().getName();
-        System.out.println("Create Account: userId: " + userId);
         User user = userRepository.findByUserId(userId)
                 .orElseThrow(() -> new RuntimeException("User was not found ID: " + userId));
         //max 1 million accounts
@@ -46,9 +48,7 @@ public class AccountService {
                 createAccountRequest.getName(),
                 createAccountRequest.getAccountType(),
                 new BigDecimal(0),
-                Currency.GBP,
-                Instant.now(),
-                Instant.now()
+                Currency.GBP
         );
         return accountRepository.save(account);
     }

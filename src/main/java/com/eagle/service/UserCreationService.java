@@ -1,21 +1,22 @@
 package com.eagle.service;
 
 import com.eagle.entity.User;
-import com.eagle.pojo.CreateUserRequest;
+import com.eagle.dtos.CreateUserRequest;
 import com.eagle.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.time.Instant;
-
 @Service
 public class UserCreationService {
-    @Autowired
-    UserRepository userRepository;
 
-    @Autowired
-    PasswordEncoder encoder;
+    private final UserRepository userRepository;
+    private final PasswordEncoder encoder;
+
+    public UserCreationService(UserRepository userRepository, PasswordEncoder encoder) {
+        this.userRepository = userRepository;
+        this.encoder = encoder;
+    }
 
     public User create(CreateUserRequest createUserRequest) {
         String hashedPassword = encoder.encode(createUserRequest.getPassword());
@@ -34,9 +35,7 @@ public class UserCreationService {
                 address,
                 createUserRequest.getPhoneNumber(),
                 createUserRequest.getEmail(),
-                hashedPassword,
-                Instant.now(),
-                Instant.now()
+                hashedPassword
         );
         return userRepository.save(user);
     }
