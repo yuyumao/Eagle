@@ -8,6 +8,7 @@ import com.eagle.service.UserCreationService;
 import com.eagle.service.UserService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
@@ -28,13 +29,8 @@ public class UserController {
     @PostMapping
     public ResponseEntity<UserResponse> add(@Valid @RequestBody CreateUserRequest request) {
         User user = userCreationServiceService.create(request);
-        URI location = ServletUriComponentsBuilder
-                .fromCurrentRequest()
-                .path("/v1/user")
-                .buildAndExpand(user.getUserId())
-                .toUri();
         UserResponse response = convertToResponse(user);
-        return ResponseEntity.created(location).body(response);
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
     @GetMapping("/{userId}")

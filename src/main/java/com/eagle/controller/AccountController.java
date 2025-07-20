@@ -1,7 +1,6 @@
 package com.eagle.controller;
 
 import com.eagle.entity.Account;
-import com.eagle.entity.SortCode;
 import com.eagle.dtos.AccountResponse;
 import com.eagle.dtos.CreateAccountRequest;
 import com.eagle.service.AccountService;
