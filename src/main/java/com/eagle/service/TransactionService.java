@@ -7,6 +7,7 @@ import com.eagle.exceptions.ConcurrentTransactionException;
 import com.eagle.exceptions.CurrencyMismatchException;
 import com.eagle.dtos.*;
 import com.eagle.repository.AccountRepository;
+import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.OptimisticLockingFailureException;
 import org.springframework.security.access.AccessDeniedException;
@@ -24,8 +25,9 @@ public class TransactionService {
         this.accountRepository = accountRepository;
     }
 
+    @Transactional
     public Transaction createTransaction(String accountNumber, CreateTransactionRequest request) {
-        Account account = accountRepository.findByAccountNumber(accountNumber)
+        Account account = accountRepository.findWithLockingByAccountNumber(accountNumber)
                     .orElseThrow(() -> new AccountNotFoundException(accountNumber));
         final String userId = SecurityContextHolder.getContext().getAuthentication().getName();
         if (!account.getUser().getUserId().equals(userId)) {

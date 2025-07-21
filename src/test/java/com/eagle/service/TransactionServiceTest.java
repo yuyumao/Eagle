@@ -84,7 +84,7 @@ class TransactionServiceTest {
 
     @Test
     void createTransaction_Deposit_Success() {
-        when(accountRepository.findByAccountNumber(accountNumber))
+        when(accountRepository.findWithLockingByAccountNumber(accountNumber))
                 .thenReturn(Optional.of(testAccount));
         when(accountRepository.save(any(Account.class))).thenAnswer(invocation -> {
             Account savedAccount = invocation.getArgument(0);
@@ -107,7 +107,7 @@ class TransactionServiceTest {
 
     @Test
     void createTransaction_Withdrawal_Success() {
-        when(accountRepository.findByAccountNumber(accountNumber))
+        when(accountRepository.findWithLockingByAccountNumber(accountNumber))
                 .thenReturn(Optional.of(testAccount));
         when(accountRepository.save(any(Account.class))).thenAnswer(invocation -> {
             Account savedAccount = invocation.getArgument(0);
@@ -126,9 +126,6 @@ class TransactionServiceTest {
 
     @Test
     void createTransaction_AccountNotFound() {
-        when(accountRepository.findByAccountNumber(accountNumber))
-                .thenReturn(Optional.empty());
-
         AccountNotFoundException exception = assertThrows(
                 AccountNotFoundException.class,
                 () -> transactionService.createTransaction(accountNumber, depositRequest)
@@ -141,7 +138,7 @@ class TransactionServiceTest {
         otherUser.setUserId(UUID.randomUUID().toString());
         testAccount.setUser(otherUser);
 
-        when(accountRepository.findByAccountNumber(accountNumber))
+        when(accountRepository.findWithLockingByAccountNumber(accountNumber))
                 .thenReturn(Optional.of(testAccount));
 
         AccessDeniedException exception = assertThrows(
@@ -156,7 +153,7 @@ class TransactionServiceTest {
     void createTransaction_InsufficientFunds() {
         withdrawalRequest.setAmount(BigDecimal.valueOf(1500.00));
 
-        when(accountRepository.findByAccountNumber(accountNumber))
+        when(accountRepository.findWithLockingByAccountNumber(accountNumber))
                 .thenReturn(Optional.of(testAccount));
 
         InsufficientFundsException exception = assertThrows(
@@ -169,7 +166,7 @@ class TransactionServiceTest {
 
     @Test
     void createTransaction_ConcurrentUpdate() {
-        when(accountRepository.findByAccountNumber(accountNumber))
+        when(accountRepository.findWithLockingByAccountNumber(accountNumber))
                 .thenReturn(Optional.of(testAccount));
 
         doThrow(new OptimisticLockingFailureException("Concurrent update"))
@@ -189,9 +186,6 @@ class TransactionServiceTest {
         invalidRequest.setAmount(BigDecimal.valueOf(100.00));
         invalidRequest.setCurrency(Currency.GBP);
         invalidRequest.setType(null);
-
-        when(accountRepository.findByAccountNumber(accountNumber))
-                .thenReturn(Optional.of(testAccount));
 
         assertThrows(
                 RuntimeException.class,
