@@ -86,6 +86,11 @@ class TransactionServiceTest {
     void createTransaction_Deposit_Success() {
         when(accountRepository.findByAccountNumber(accountNumber))
                 .thenReturn(Optional.of(testAccount));
+        when(accountRepository.save(any(Account.class))).thenAnswer(invocation -> {
+            Account savedAccount = invocation.getArgument(0);
+            savedAccount.getTransactions().forEach(tx -> tx.setId("id")); // 设置模拟ID
+            return savedAccount;
+        });
 
         Transaction transaction = transactionService.createTransaction(accountNumber, depositRequest);
 
@@ -104,6 +109,11 @@ class TransactionServiceTest {
     void createTransaction_Withdrawal_Success() {
         when(accountRepository.findByAccountNumber(accountNumber))
                 .thenReturn(Optional.of(testAccount));
+        when(accountRepository.save(any(Account.class))).thenAnswer(invocation -> {
+            Account savedAccount = invocation.getArgument(0);
+            savedAccount.getTransactions().forEach(tx -> tx.setId("id")); // 设置模拟ID
+            return savedAccount;
+        });
 
         Transaction transaction = transactionService.createTransaction(accountNumber, withdrawalRequest);
 

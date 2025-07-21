@@ -52,7 +52,11 @@ public class TransactionService {
             }
             account.addTransaction(transaction);
             Account savedAccount = accountRepository.save(account);
-            savedTransaction = savedAccount.getTransactions().getLast();
+
+            savedTransaction = savedAccount.getTransactions().stream()
+                    .filter(tx -> tx.getReference().equals(transaction.getReference()))
+                    .findFirst()
+                    .orElseThrow(() -> new IllegalStateException("Transaction not persisted"));
         } catch (OptimisticLockingFailureException ex) {
             throw new ConcurrentTransactionException("Account balance updated by another transaction");
         }
